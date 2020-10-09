@@ -6,7 +6,6 @@ from .utils import str2bool
 
 def run_classifier(args):
     """"""
-    print('starting classifier', flush=True)
     src = 'brainmaps://'
     raw_data = src + args.raw_data
     seg_layer = src + args.base_volume + ':' + args.change_stack_id
