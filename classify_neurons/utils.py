@@ -81,3 +81,11 @@ def str2bool(v):
         return False
     else:
         raise ArgumentTypeError('Boolean value expected.')
+
+def parse_chg_stack(arg):
+    """parses changestack id to allow using a base volume"""
+    if not isinstance(arg, str):
+        raise ValueError('changestack id must be a string')
+    if arg.lower() in ("n", "none", "f", "false", "0"):
+        return None
+    return arg

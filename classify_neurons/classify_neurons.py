@@ -7,8 +7,18 @@ from agglomeration_proofreading.viewer_bases import _ViewerBase
 from .utils import load_file, file_pattern, write_json, mk_time_stamp_str
 
 
+# todo:
+#  - script that checks for chrome version installed in the default location
+#  and downloads the respective chrome driver to be unpacked and referenced to
+#  in a temporary dir. If the chrome version is not found, downloads the latest
+#  version of chrome driver available. If this does not work return error. This
+#  would be best implemented as a separate class, maybe even function for the
+#  agglomeration proofreading viewer_bases
+
+
 class ClassifyNeuronsViewer(_ViewerBase):
     """"""
+
     def __init__(self, targ_dir, raw_data, layers, remove_token):
 
         super(ClassifyNeuronsViewer, self).__init__(raw_data=raw_data,
@@ -55,6 +65,8 @@ class ClassifyNeuronsViewer(_ViewerBase):
                                 lambda s: self.remove_from_group())
         self.viewer.actions.add('toogle_group_display',
                                 lambda s: self.toogle_group())
+        self.viewer.actions.add('selected_neurons_to_group',
+                                lambda s: self.selected_to_group())
         self.viewer.actions.add('save',
                                 lambda s: self.save_file())
         self.viewer.actions.add('exit',
@@ -135,7 +147,6 @@ class ClassifyNeuronsViewer(_ViewerBase):
                                                           self.current_group)
         self.upd_msg(msg)
         self.next_neuron()
-        print({k: v for k, v in self.data.items() if k != -1}, flush=True)
 
     def next_group(self):
         """displays next neuron group"""
@@ -159,7 +170,8 @@ class ClassifyNeuronsViewer(_ViewerBase):
 
     def remove_from_group(self):
         """removes the neuron in the viewer from the group it was assigned to"""
-        viewer_segments = list(self.viewer.state.layers[self.layer_name].segments)
+        viewer_segments = list(
+            self.viewer.state.layers[self.layer_name].segments)
         if len(viewer_segments) != 1:
             msg = 'A single segment has to be in the viewer in order to remove ' \
                   'it from the group it has been assigned to'
@@ -188,9 +200,36 @@ class ClassifyNeuronsViewer(_ViewerBase):
             print('removal of segment', segment, 'from group', self.group,
                   'failed with error', e, flush=True)
 
+    def selected_to_group(self):
+        """Assigns the segments visible in the viewer to a new group"""
+        viewer_segments = [int(seg) for seg in
+                           self.viewer.state.layers[self.layer_name].segments]
+        msg = 'Neurons in viewer will be assigned to a new group'
+        self.upd_msg(msg)
+
+        # remove the segments from the groups they are currently assigned to
+        for seg in viewer_segments:
+            key = [k for k, v in self.data.items() if seg in v]
+            if len(key) > 1:
+                raise ValueError(' this should not happen, neuron ', seg,
+                                 'assigned to 2 groups ')
+            key = key[0]
+            self.data[key].remove(seg)
+
+        # assign neurons in viewer to new group
+        new_id = self.max_group_id()+1
+        self.data[new_id] = viewer_segments
+
+        msg = 'Neurons in viewer were assigned to group' + str(new_id)
+        self.upd_msg(msg)
+
+        self.current_group = new_id
+        self.next_neuron()
+
     def toogle_group(self):
         """toggles visibility of the neurons in the current group"""
-        viewer_segments = list(self.viewer.state.layers[self.layer_name].segments)
+        viewer_segments = list(
+            self.viewer.state.layers[self.layer_name].segments)
         if len(viewer_segments) == 1:
             self.display_current()
         else:
@@ -205,5 +244,3 @@ class ClassifyNeuronsViewer(_ViewerBase):
         """"""
         fn = Path(self.targ_dir).joinpath(mk_time_stamp_str() + file_pattern)
         write_json(self.data, fn)
-
-

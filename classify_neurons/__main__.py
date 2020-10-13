@@ -1,14 +1,16 @@
 from gooey import Gooey, GooeyParser
 
 from .classify_neurons import ClassifyNeuronsViewer
-from .utils import str2bool
+from .utils import str2bool, parse_chg_stack
 
 
 def run_classifier(args):
     """"""
     src = 'brainmaps://'
     raw_data = src + args.raw_data
-    seg_layer = src + args.base_volume + ':' + args.change_stack_id
+    seg_layer = src + args.base_volume
+    if args.change_stack_id:
+        seg_layer = seg_layer + ':' + args.change_stack_id
     layers = {'segmentation': seg_layer}
     with ClassifyNeuronsViewer(targ_dir=args.targ_dir,
                                raw_data=raw_data,
@@ -40,9 +42,10 @@ def main():
                     help='image data volume path')
 
     ap.add_argument('-change_stack_id',
-                    type=str,
+                    type=parse_chg_stack,
                     default='200614_prj487208920048_graph_postapr',
-                    help='id of the change stack storing the agglomeration '
+                    help='change stack id storing the agglomeration; to use '
+                         'base volume enter one of: n, none, f. false, 0'
                          'graph')
 
     ap.add_argument('-remove_token',
@@ -59,4 +62,3 @@ def main():
     ap_args = ap.parse_args()
 
     ap_args.func(ap_args)
-
