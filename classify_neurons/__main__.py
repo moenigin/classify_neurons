@@ -15,7 +15,8 @@ def run_classifier(args):
     with ClassifyNeuronsViewer(targ_dir=args.targ_dir,
                                raw_data=raw_data,
                                layers=layers,
-                               remove_token=args.remove_token) as cls_neuron:
+                               remove_token=args.remove_token,
+                               timer_interval=args.timer_interval) as cls_neuron:
         cls_neuron.exit_event.wait()
 
 
@@ -56,6 +57,11 @@ def main():
                          'program. \n'
                          'Usage: true, yes, t, y, 1 or false, no, n, f, 0; '
                          'case-insensitive')
+
+    ap.add_argument('-timer_interval',
+                    type=int,
+                    default=600,
+                    help='interval of the autosave tiner in sec')
 
     ap.set_defaults(func=run_classifier)
 

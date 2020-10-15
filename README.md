@@ -26,7 +26,7 @@ conda env create -f cls_neurons.yml
 ```
 
 ## Usage 
-The json file in data needs to be stored in a folder with known path
+The json file in /data needs to be stored in a folder with known path
 
 For usage instructions see [here](https://github.com/moenigin/classify_neurons/blob/main/manual.md)
 

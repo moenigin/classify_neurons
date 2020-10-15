@@ -20,12 +20,14 @@ from .utils import load_file, file_pattern, write_json, mk_time_stamp_str
 class ClassifyNeuronsViewer(_ViewerBase):
     """"""
 
-    def __init__(self, targ_dir, raw_data, layers, remove_token):
+    def __init__(self, targ_dir, raw_data, layers, remove_token, timer_interval):
 
         super(ClassifyNeuronsViewer, self).__init__(raw_data=raw_data,
                                                     layers=layers,
-                                                    remove_token=remove_token)
-
+                                                    remove_token=remove_token,
+                                                    timer_interval=timer_interval)
+        if timer_interval is not None:
+            self.timer.start_timer(func=self.save_file)
         self.targ_dir = targ_dir
         self.layer_name = list(layers.keys())[0]
         try:

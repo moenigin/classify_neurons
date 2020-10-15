@@ -38,7 +38,8 @@ If a neuron has been wrongly assigned to a group it can be removed from that
 group by isolating it in the viewer (press "X" or by manually deselect all other 
 cells). Then press control + "]". The neuron will be removed from that group.
 
-Press ctrl+s to save the data. Regular automatic save comes soon!
+Press ctrl+s to save the data.  Data is automatically saved at a time interval 
+specified on start, default = 600 sec.
 
 Press ctrl+delete to exit the program. This will automatically save the 
 class assignments.
