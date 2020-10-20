@@ -8,7 +8,7 @@ from .utils import load_file, file_pattern, write_json, mk_time_stamp_str
 
 
 # todo:
-#  - autosave from neuroproofreader
+#  - INI file that stores settings entered to GUI?
 #  - script that checks for chrome version installed in the default location
 #  and downloads the respective chrome driver to be unpacked and referenced to
 #  in a temporary dir. If the chrome version is not found, downloads the latest

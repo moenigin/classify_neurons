@@ -26,7 +26,8 @@ display of the other neuron can be toggled off and on using key "X".
 If it becomes apparent that a class/group of neurons is composed of 2 
 subclasses, the group can be divided: deselect one of two subclasses from the 
 viewer. This can be achieved in two ways
-First by doubleclicking on the mesh or the segment in the viewer. Second by control+click on the tab in upper left that 
+First by doubleclicking on the mesh or the segment in the viewer. Second by 
+control+click on the tab in upper left that 
 is named "segmentation". This opens a panel on the right. Under the tab Seg. one 
 can find a list of segment ids displayed. Checking or unchecking of the box to 
 the left of each id can be used to hide or the display the neuron. 
@@ -45,10 +46,23 @@ Press ctrl+delete to exit the program. This will automatically save the
 class assignments.
 
 
-### Useful neuroglancer functions
+## Useful shortcuts 
+
 + "H" opens the help window which lists full list of neuroglancer functions and 
 their key and mouse bindings. Press ESC to close the window.
++ ctrl+click onto the tap holding a particular layer (upper left) will open up 
+detail layer information, e.g. the list of segments in the layer 
 + scrolling wheel for zooming in and out in the 3D viewport
 + "L" - recolors the segments
 + right mouse button jumps the viewer location to the position of the cursor
 + space and shift+space to display and hide the raw image and segmentation view
+
++ "Q": display next neuron to be assigned to a class
++ "V": display previous neuron to be assigned to a class
++ "T": assign neuron to current class displayed 
++ "N": assign neuron to a new group
++ "F": increment the current class number
++ "D": decrement the current class number
++ "Ctrl+]": remove the neuron in the viewer from the class it was assigned to
++ "Ctrl+P": assign all neurons displayed in the viewer to a new group
++ "Ctrl+Delete": exit program
