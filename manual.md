@@ -43,7 +43,8 @@ Press ctrl+s to save the data.  Data is automatically saved at a time interval
 specified on start, default = 600 sec.
 
 Press ctrl+delete to exit the program. This will automatically save the 
-class assignments.
+class assignments. The classification can be stopped at any time and with the 
+latest assignments being loaded upon restart (not the exact viewer state!). 
 
 
 ## Useful shortcuts 
