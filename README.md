@@ -22,7 +22,7 @@ git clone https://github.com/moenigin/classify_neurons.git
 navigate to the proofreading folder and install the downloaded environment.yml,
 ```
 cd .\classify_neurons
-conda env create -f cls_neurons.yml
+conda env create -f classify_neurons.yml
 ```
 
 ## Usage 
