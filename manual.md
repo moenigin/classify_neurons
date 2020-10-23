@@ -1,6 +1,8 @@
 # Usage Instructions
 
-The goal is to group neurons into classes based on morphological features.
+heads-up: the very initial loading of whole cells to the viewer can take its time!
+
+##### The goal is to group neurons into classes based on morphological features.
 
 At the beginning 2 neurons are displayed. The user now has to make the decision 
 whether these neurons belong to the same class. If this is the case, this can be 

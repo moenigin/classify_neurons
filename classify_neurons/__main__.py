@@ -20,7 +20,7 @@ def run_classifier(args):
         cls_neuron.exit_event.wait()
 
 
-@Gooey
+@Gooey(program_name='classify_neurons', show_success_modal=False)
 def main():
     """"""
     ap = GooeyParser()
@@ -29,7 +29,7 @@ def main():
                     default=r'C:\Data\EM\test',
                     type=str,
                     help="path to directory for saving proofreading data",
-                    widget='FileChooser')
+                    widget='DirChooser')
 
     ap.add_argument('-base_volume',
                     type=str,
