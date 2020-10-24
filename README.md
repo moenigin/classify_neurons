@@ -41,5 +41,6 @@ program is started it opens a dialog window in which the path to directory for s
 proofreading data needs to be set to this folder. 
 
 ![gui](./data/screenshot_gui.png)
+
 For usage instructions see [here](https://github.com/moenigin/classify_neurons/blob/main/manual.md)
 
