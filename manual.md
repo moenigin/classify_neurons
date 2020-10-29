@@ -69,3 +69,6 @@ detail layer information, e.g. the list of segments in the layer
 + "Ctrl+]": remove the neuron in the viewer from the class it was assigned to
 + "Ctrl+P": assign all neurons displayed in the viewer to a new group
 + "Ctrl+Delete": exit program
+
+DIFFERENCE IN SWISS KEYBOARD SHORTCUTS
++ "Ctrl+..": remove the neuron in the viewer from the class it was assigned to
