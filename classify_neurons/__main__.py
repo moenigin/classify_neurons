@@ -1,4 +1,5 @@
 from gooey import Gooey, GooeyParser
+from pathlib import Path
 
 from .classify_neurons import ClassifyNeuronsViewer
 from .utils import str2bool, parse_chg_stack
@@ -20,7 +21,7 @@ def run_classifier(args):
         cls_neuron.exit_event.wait()
 
 
-@Gooey(program_name='classify_neurons', show_success_modal=False)
+@Gooey(program_name='classify_neurons', show_success_modal=False, image_dir=Path(__file__).resolve().parent.parent)
 def main():
     """"""
     ap = GooeyParser()

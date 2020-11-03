@@ -9,6 +9,8 @@ from .utils import load_file, file_pattern, write_json, mk_time_stamp_str
 
 # todo:
 #  - INI file that stores settings entered to GUI as default for next start!!!
+#  - autosave only when there are changes to the file - > customlist equivalent
+#  for dict
 #  - script that checks for chrome version installed in the default location
 #  and downloads the respective chrome driver to be unpacked and referenced to
 #  in a temporary dir. If the chrome version is not found, downloads the latest
@@ -20,7 +22,8 @@ from .utils import load_file, file_pattern, write_json, mk_time_stamp_str
 class ClassifyNeuronsViewer(_ViewerBase):
     """"""
 
-    def __init__(self, targ_dir, raw_data, layers, remove_token, timer_interval):
+    def __init__(self, targ_dir, raw_data, layers, remove_token,
+                 timer_interval):
 
         super(ClassifyNeuronsViewer, self).__init__(raw_data=raw_data,
                                                     layers=layers,
@@ -35,12 +38,13 @@ class ClassifyNeuronsViewer(_ViewerBase):
         except FileNotFoundError:
             msg = 'Could not find an appropriate src file in' + str(targ_dir)
             self.upd_msg(msg)
-            return
+            print(msg)
+            self.exit()
 
+        self.current_neuron = None
         # load first neuron and register
         if list(self.data.keys()) == [-1]:
             self.current_idx = -1
-            self.current_neuron = None
             self.current_group = None
             self.next_neuron()
             self.to_group('new')
@@ -87,9 +91,42 @@ class ClassifyNeuronsViewer(_ViewerBase):
 
         self._bind_pairs(ini_file)
 
+    def check_all_assigned(self):
+        """checks whether all neurons were assigned"""
+        if len(self.data[-1]) == 0:
+            msg = 'All neurons were assigned to a group. The assignment can still be modified'
+            self.upd_msg(msg)
+            self.current_idx = 0
+            self.current_neuron = None
+            return True
+        else:
+            return False
+
+    def check_group_empty(self):
+        """checks for empty groups in the data dict and removes them,
+        recalculating the group_id assignment
+        """
+        # ensure not to remove the -1 group even if it is empty
+        empty_groups = [key for key, val in self.data.items() if
+                        val == [] and key != -1]
+
+        if empty_groups:
+            for k in empty_groups:
+                del self.data[k]
+            temp_dict = {i: val for i, (k, val) in
+                         zip(range(-1, self.max_group_id()), self.data.items())
+                         if k != -1}
+            self.data = {-1: self.data[-1]}
+            self.data.update(temp_dict)
+            self.current_group = self.current_group - len(
+                [f for f in empty_groups if f < self.current_group])
+
     def next_neuron(self):
         """increments neuron index and triggers viewer update"""
-        if self.current_idx + 1 == len(self.data[-1]):
+        if self.check_all_assigned():
+            return
+
+        if self.current_idx + 1 >= len(self.data[-1]):
             self.current_idx = 0
         else:
             self.current_idx += 1
@@ -98,7 +135,10 @@ class ClassifyNeuronsViewer(_ViewerBase):
 
     def prev_neuron(self):
         """decrements neuron index and triggers viewer update"""
-        if self.current_idx == 0:
+        if self.check_all_assigned():
+            return
+
+        if self.current_idx <= 0:
             self.current_idx = len(self.data[-1]) - 1
         else:
             self.current_idx -= 1
@@ -107,11 +147,15 @@ class ClassifyNeuronsViewer(_ViewerBase):
 
     def display_current(self):
         """triggers display of current neuron and neuron group in the viewer"""
-        self.current_neuron = self.data[-1][self.current_idx]
+        # get neurons of the current group
         group = []
         if self.current_group is not None:
             group = deepcopy(self.data[self.current_group])
-        group.append(self.current_neuron)
+
+        if not self.check_all_assigned():
+            self.current_neuron = self.data[-1][self.current_idx]
+            group.append(self.current_neuron)
+
         self.upd_viewer_segments(self.layer_name, group)
         self.display_info()
 
@@ -135,6 +179,10 @@ class ClassifyNeuronsViewer(_ViewerBase):
 
         """
 
+        # check length of self.data[-1] if it is empty display message in board that review is finished and return without triggering self.next_neuron
+        if self.check_all_assigned():
+            return
+
         if mode == 'new':
             if self.current_group is not None:
                 self.current_group = self.max_group_id() + 1
@@ -144,12 +192,16 @@ class ClassifyNeuronsViewer(_ViewerBase):
         if self.current_group not in self.data.keys():
             self.data[self.current_group] = []
 
-        self.data[self.current_group].append(self.current_neuron)
+        # do not allow to enter a neuron into a group several times
+        if not self.current_neuron in self.data[self.current_group]:
+            self.data[self.current_group].append(self.current_neuron)
+
         self.data[-1].remove(self.current_neuron)
         msg = 'neuron {} was assigned to group {}'.format(self.current_neuron,
                                                           self.current_group)
         self.upd_msg(msg)
-        self.next_neuron()
+
+        self.prev_neuron()
 
     def next_group(self):
         """displays next neuron group"""
@@ -202,6 +254,13 @@ class ClassifyNeuronsViewer(_ViewerBase):
             self.upd_msg(msg)
             print('removal of segment', segment, 'from group', self.group,
                   'failed with error', e, flush=True)
+            # update viewer to display the group the neuron was removed from
+
+        self.check_group_empty()
+        self.upd_viewer_segments(self.layer_name, self.data[self.current_group])
+        msg = 'Neuron {} was removed from group {}. Press Q or V to load a new unassigned neuron'.format(
+            segment, self.current_group)
+        self.upd_msg(msg)
 
     def selected_to_group(self):
         """Assigns the segments visible in the viewer to a new group"""
@@ -220,13 +279,14 @@ class ClassifyNeuronsViewer(_ViewerBase):
             self.data[key].remove(seg)
 
         # assign neurons in viewer to new group
-        new_id = self.max_group_id()+1
+        new_id = self.max_group_id() + 1
         self.data[new_id] = viewer_segments
 
         msg = 'Neurons in viewer were assigned to group' + str(new_id)
         self.upd_msg(msg)
 
         self.current_group = new_id
+        self.check_group_empty()
         self.next_neuron()
 
     def toogle_group(self):
@@ -245,5 +305,7 @@ class ClassifyNeuronsViewer(_ViewerBase):
 
     def save_file(self):
         """"""
-        fn = Path(self.targ_dir).joinpath(mk_time_stamp_str() + file_pattern)
-        write_json(self.data, fn)
+        if hasattr(self, 'data'):
+            fn = Path(self.targ_dir).joinpath(
+                mk_time_stamp_str() + file_pattern)
+            write_json(self.data, fn)
