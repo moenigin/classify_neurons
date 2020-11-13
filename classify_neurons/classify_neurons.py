@@ -35,6 +35,7 @@ class ClassifyNeuronsViewer(_ViewerBase):
         self.layer_name = list(layers.keys())[0]
         try:
             self.data = load_file(targ_dir)
+            self.prev_data = deepcopy(self.data)
         except FileNotFoundError:
             msg = 'Could not find an appropriate src file in' + str(targ_dir)
             self.upd_msg(msg)
@@ -52,6 +53,14 @@ class ClassifyNeuronsViewer(_ViewerBase):
             self.current_idx = 0
             self.current_group = self.max_group_id()
             self.display_current()
+
+    def upd_viewer_segments(self, layer, segments):
+        """"""
+        super().upd_viewer_segments(layer, segments)
+        if isinstance(segments, int):
+            segments = [segments]
+        with self.viewer.txn() as s:
+            s.layers[layer].segmentQuery = ', '.join([str(seg) for seg in segments])
 
     def _set_keybindings(self):
         """"""
@@ -193,7 +202,7 @@ class ClassifyNeuronsViewer(_ViewerBase):
             self.data[self.current_group] = []
 
         # do not allow to enter a neuron into a group several times
-        if not self.current_neuron in self.data[self.current_group]:
+        if self.current_neuron not in self.data[self.current_group]:
             self.data[self.current_group].append(self.current_neuron)
 
         self.data[-1].remove(self.current_neuron)
@@ -249,17 +258,18 @@ class ClassifyNeuronsViewer(_ViewerBase):
             self.data[group_id].remove(segment)
             self.data[-1].append(segment)
         except Exception as e:
-            msg = 'could not remove neuron {} from group {}'.format(segment,
-                                                                    self.current_group)
+            msg = 'could not remove neuron {} \
+                from group {}'.format(segment, self.current_group)
             self.upd_msg(msg)
             print('removal of segment', segment, 'from group', self.group,
                   'failed with error', e, flush=True)
-            # update viewer to display the group the neuron was removed from
+            raise
 
         self.check_group_empty()
         self.upd_viewer_segments(self.layer_name, self.data[self.current_group])
-        msg = 'Neuron {} was removed from group {}. Press Q or V to load a new unassigned neuron'.format(
-            segment, self.current_group)
+        msg = 'Neuron {} was removed from group {}. \
+         Press Q or V to load a new unassigned neuron'.format(segment,
+                                                              self.current_group)
         self.upd_msg(msg)
 
     def selected_to_group(self):
@@ -306,6 +316,8 @@ class ClassifyNeuronsViewer(_ViewerBase):
     def save_file(self):
         """"""
         if hasattr(self, 'data'):
-            fn = Path(self.targ_dir).joinpath(
-                mk_time_stamp_str() + file_pattern)
-            write_json(self.data, fn)
+            if self.prev_data != self.data:
+                fn = Path(self.targ_dir).joinpath(
+                    mk_time_stamp_str() + file_pattern)
+                write_json(self.data, fn)
+                self.prev_data = deepcopy(self.data)
