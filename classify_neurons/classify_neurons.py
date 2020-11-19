@@ -21,7 +21,6 @@ from .utils import load_file, file_pattern, write_json, mk_time_stamp_str
 
 class ClassifyNeuronsViewer(_ViewerBase):
     """"""
-
     def __init__(self, targ_dir, raw_data, layers, remove_token,
                  timer_interval):
 
@@ -303,7 +302,7 @@ class ClassifyNeuronsViewer(_ViewerBase):
         """toggles visibility of the neurons in the current group"""
         viewer_segments = list(
             self.viewer.state.layers[self.layer_name].segments)
-        if len(viewer_segments) == 1:
+        if len(viewer_segments) == 1 or self.current_neuron is None:
             self.display_current()
         else:
             self.upd_viewer_segments(self.layer_name, self.current_neuron)
