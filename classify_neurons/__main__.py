@@ -27,14 +27,14 @@ def main():
     ap = GooeyParser()
 
     ap.add_argument("-targ_dir",
-                    default=r'C:\Data\EM\test',
+                    default=r'C:\Data\EM\classification',
                     type=str,
                     help="path to directory for saving proofreading data",
                     widget='DirChooser')
 
     ap.add_argument('-base_volume',
                     type=str,
-                    default='487208920048:adultob:seg_v2_9nm_484558417fb_18nm_fb_107004781_otfa',
+                    default='487208920048:adultob:seg_v2_9nm_484558417fb_18nm_fb_107004781_otfa_multires_mesh',
                     help='base segmentation volume id in form of '
                          '"projectId:datasetId:volumeId"')
 

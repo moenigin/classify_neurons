@@ -21,6 +21,7 @@ from .utils import load_file, file_pattern, write_json, mk_time_stamp_str
 
 class ClassifyNeuronsViewer(_ViewerBase):
     """"""
+
     def __init__(self, targ_dir, raw_data, layers, remove_token,
                  timer_interval):
 
@@ -59,7 +60,8 @@ class ClassifyNeuronsViewer(_ViewerBase):
         if isinstance(segments, int):
             segments = [segments]
         with self.viewer.txn() as s:
-            s.layers[layer].segmentQuery = ', '.join([str(seg) for seg in segments])
+            s.layers[layer].segmentQuery = ', '.join(
+                [str(seg) for seg in segments])
 
     def _set_keybindings(self):
         """"""
@@ -119,15 +121,17 @@ class ClassifyNeuronsViewer(_ViewerBase):
                         val == [] and key != -1]
 
         if empty_groups:
-            for k in empty_groups:
-                del self.data[k]
-            temp_dict = {i: val for i, (k, val) in
-                         zip(range(-1, self.max_group_id()), self.data.items())
-                         if k != -1}
-            self.data = {-1: self.data[-1]}
-            self.data.update(temp_dict)
-            self.current_group = self.current_group - len(
-                [f for f in empty_groups if f < self.current_group])
+            temp_dict = {-1: self.data[-1]}
+            idx = 0
+            for k, v in self.data.items():
+                if k == -1:
+                    continue
+                if any(v):
+                    temp_dict[idx] = v
+                    idx += 1
+                else:
+                    self.current_group += -1
+            self.data = temp_dict
 
     def next_neuron(self):
         """increments neuron index and triggers viewer update"""
