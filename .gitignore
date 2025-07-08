@@ -5,4 +5,7 @@ classify_neurons.ico
 /build
 debug.log
 cls_neuron.yml
-cls_neurons.yml
+cls_neurons.yml# pixi environments
+.pixi
+.idea
+pixi.lock

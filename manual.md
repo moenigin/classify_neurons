@@ -1,6 +1,6 @@
 # Usage Instructions
 
-heads-up: the very initial loading of whole cells to the viewer can take its time!
+heads-up: the very initial loading of whole cells to the viewer can take quite long - reloading the browser can speed this up.
 
 ##### The goal is to group neurons into classes based on morphological features.
 
@@ -21,9 +21,6 @@ bottom left.
 Neurons that are not yet assigned to a neuron are stored in a list. Newly loaded 
 neurons are chosen from this list. This list can also be navigated: 
 Pressing key "V" will move downward in the list and key "Q" will move upward in the list.
-
-If a newly loaded neuron needs to be investigated in a bit more detail the 
-display of the other neuron can be toggled off and on using key "X".
 
 If it becomes apparent that a class/group of neurons is composed of 2 
 subclasses, the group can be divided. To do so, the cells belonging to one of two 
@@ -47,6 +44,12 @@ group by isolating it in the viewer (manually deselect all other
 cells, see above). Then press control + "]" (SWISS KEYBOARD: control + ".."). 
 The neuron will be removed from that group and is placed in the list of neurons 
 that are yet unassigned.
+
+If a newly loaded neuron needs to be investigated in a bit more detail the 
+display of the other neuron can be toggled off and on using key "X".
+When groups become large it can be helpful to reduce the number of cells displayed. 
+This can be done by opening the layer properties and deselecting neurons displayed as described above. 
+
 
 Press ctrl+s to save the data.  Data is automatically saved at a time interval 
 specified on start, default = 600 sec.
