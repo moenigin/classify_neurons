@@ -70,6 +70,7 @@ detail layer information, e.g. the list of segments in the layer
 + right mouse button jumps the viewer location to the position of the cursor
 + space and shift+space to display and hide the raw image and segmentation view
 
++ "X": toggle display of all neurons in a group and the neuron to be classified alone
 + "Q": display next neuron to be assigned to a class
 + "V": display previous neuron to be assigned to a class
 + "T": assign neuron to current class displayed 
@@ -78,6 +79,7 @@ detail layer information, e.g. the list of segments in the layer
 + "D": decrement the current class number
 + "Ctrl+]": remove the neuron in the viewer from the class it was assigned to
 + "Ctrl+P": assign all neurons displayed in the viewer to a new group
++ "Ctrl+S": save data
 + "Ctrl+Delete": exit program
 
 DIFFERENCE IN SWISS KEYBOARD SHORTCUTS
